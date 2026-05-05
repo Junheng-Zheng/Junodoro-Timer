@@ -161,8 +161,8 @@ export default function Home() {
         >
           {variant === "primary" && (
             <>
-              <div className="top-0 right-0  absolute w-8 h-8 bg-red-500  opacity-60 blur-sm z-0 rounded-full"></div>
-              <div className="bottom-0 left-0  absolute w-8 h-8 bg-red-500  opacity-60  blur-sm z-0 rounded-full"></div>
+              <div className="hidden md:block top-0 right-0  absolute w-8 h-8 bg-red-500  opacity-60 blur-sm z-0 rounded-full"></div>
+              <div className="hidden md:block   bottom-0 left-0  absolute w-8 h-8 bg-red-500  opacity-60  blur-sm z-0 rounded-full"></div>
             </>
           )}
           <div className="bg-[linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)] rounded-3xl  opacity-20   absolute inset-0 [background-size:2px_2px]" />
