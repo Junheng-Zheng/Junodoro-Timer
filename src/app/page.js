@@ -75,21 +75,21 @@ export default function Home() {
   const cardSkewControls = useAnimationControls();
 
   useEffect(() => {
-    void cardSkewControls.start({ skewX: -12, transition: { duration: 0 } });
+    void cardSkewControls.start({ skewX: -10, transition: { duration: 0 } });
   }, [cardSkewControls]);
 
   const pulseCardSkew = useCallback(() => {
     void (async () => {
       cardSkewControls.stop();
       await cardSkewControls.start({
-        skewX: -10,
+        skewX: -8,
         transition: {
           duration: 0.045,
           ease: [0.25, 0.8, 0.25, 1],
         },
       });
       await cardSkewControls.start({
-        skewX: -12,
+        skewX: -10,
         transition: {
           type: "spring",
           stiffness: 100,
@@ -162,7 +162,7 @@ export default function Home() {
         className="relative scale-105  -translate-x-[12px]"
       >
         <motion.div
-          initial={{ skewX: -12 }}
+          initial={{ skewX: -10 }}
           animate={cardSkewControls}
           className="relative"
         >
