@@ -130,6 +130,10 @@ export default function Home() {
     setRemainingSeconds(1);
     setIsRunning(true);
   };
+  const skipTo400 = () => {
+    setRemainingSeconds(400);
+    setIsRunning(true);
+  };
 
   useEffect(() => {
     try {
@@ -386,7 +390,7 @@ export default function Home() {
   return (
     <div className="flex h-dvh cursor-crosshair bg-gray-100  items-center  fixed left-0 top-0 w-full  contrast-90 saturate-100 brightness-95  justify-center font-sans ">
       <div
-        className={`inset-0 border-r tracking-tight text-xl  border-gray-100 flex flex-col bg-white font-mono uppercase  h-full z-50 transition-all text-nowrap duration-300 overflow-hidden ${isSettingsOpen ? " translate-x-0 w-[420px]" : " -translate-x-full delay-150 w-0"}`}
+        className={`fixed md:relative inset-0 md:border-r tracking-tight text-xl  border-gray-100 flex flex-col bg-white font-mono uppercase  h-full z-50 transition-all text-nowrap duration-300 overflow-hidden ${isSettingsOpen ? " translate-x-0 w-full md:w-[420px]" : " -translate-x-full delay-150 w-0"}`}
       >
         {/* <button
             type="button"
@@ -798,6 +802,17 @@ export default function Home() {
           playClickSound();
           pulseCardSkew();
           skipToLastSecond();
+        }}
+        className="mt-6 text-xs font-mono text-zinc-500 underline-offset-4 hover:text-zinc-800 underline"
+      >
+        Skip to last second (test alarm)
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          playClickSound();
+          pulseCardSkew();
+          skipTo400();
         }}
         className="mt-6 text-xs font-mono text-zinc-500 underline-offset-4 hover:text-zinc-800 underline"
       >
