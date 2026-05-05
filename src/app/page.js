@@ -373,7 +373,7 @@ export default function Home() {
           </div>
         </motion.div>
       </motion.div>
-      <button
+      {/* <button
         type="button"
         onClick={() => {
           playClickSound();
@@ -383,7 +383,7 @@ export default function Home() {
         className="mt-6 text-xs font-mono text-zinc-500 underline-offset-4 hover:text-zinc-800 underline"
       >
         Skip to last second (test alarm)
-      </button>
+      </button> */}
       {/* <div className="flex flex-col items-center justify-center pt-12 ">
         <p>To Do List</p>
       </div> */}
