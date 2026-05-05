@@ -2,15 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, useAnimationControls } from "framer-motion";
-import {
-  Play,
-  X,
-  RotateCcw,
-  Pause,
-  ArrowLeftShort,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
+import { Play, X, RotateCcw, Pause, ArrowRight } from "lucide-react";
 function formatMMSS(totalSeconds) {
   const clamped = Math.max(0, Math.floor(totalSeconds));
   const mm = Math.floor(clamped / 60);
@@ -198,7 +190,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-dvh flex-col items-center  fixed left-0 top-0 w-full h-full  saturate-90 justify-center  px-6 font-sans ">
+    <div className="flex h-dvh flex-col items-center  fixed left-0 top-0 w-full  saturate-90 brightness-95  justify-center  px-6 font-sans ">
       <motion.div
         initial={{ y: 0 }}
         animate={{ y: [0, -10, 0] }}
@@ -208,7 +200,7 @@ export default function Home() {
           repeat: Infinity,
         }}
         style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
-        className="relative scale-105  -translate-x-[12px] md:scale-120 "
+        className="relative scale-105  translate-x-[-12px] md:scale-120 "
       >
         <motion.div
           initial={{ skewX: -10 }}
@@ -230,20 +222,9 @@ export default function Home() {
             className="rounded-[36px] border overflow-hidden  border-white/10 p-3 bg-linear-to-b from-[#4C4C4C] to-black gap-3  flex flex-col z-20 relative "
           >
             <div className="top-0 left-0  absolute w-10 h-10 bg-white  opacity-60 blur-2xl z-1 rounded-full"></div>
-            {/* <div className="top-0 left-0  absolute w-30 h-30 bg-orange-600  opacity-60 blur-2xl z-0 rounded-full"></div> */}
+            <div className="top-0 left-0  absolute w-30 h-30 bg-white/80  opacity-60 blur-2xl z-0 rounded-full"></div>
             <div className="bg-[linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)]  opacity-20   absolute inset-0 [background-size:2px_2px]" />
-            <svg className="pointer-events-none absolute z-45 inset-0 h-full w-full opacity-25">
-              <filter id="noiseFilter">
-                <feTurbulence
-                  type="fractalNoise"
-                  baseFrequency="1.2"
-                  numOctaves="2"
-                  stitchTiles="stitch"
-                />
-              </filter>
 
-              <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-            </svg>
             <div className="p-6 border relative  border-white/20 items-center flex flex-col gap-1 justify-center text-6xl rounded-[28px] overflow-hidden bg-linear-to-b from-[#232323] to-black shadow-inner  shadow-black text-white tabular-nums ">
               <div className="absolute inset-0  z-120 opacity-3 flex justify-between">
                 {Array.from({ length: 80 }, (_, i) => i + 1).map((d) => (
@@ -299,7 +280,7 @@ export default function Home() {
                   return (
                     <div
                       key={s.key}
-                      className="flex h-5 min-w-0 overflow-hidden rounded-md bg-white/20"
+                      className="flex h-5 min-w-0 overflow-hidden rounded-md bg-white/10"
                       style={{ flex: `${s.seconds} 1 0%` }}
                     >
                       <div
