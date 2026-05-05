@@ -24,3 +24,19 @@ body {
   color: black;
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  appearance: textfield; /* modern browsers */
+  -moz-appearance: textfield; /* Firefox */
+  -webkit-appearance: none; /* Chrome/Safari */
+  padding-right: 0; /* remove extra space */
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
