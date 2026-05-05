@@ -1,8 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, useAnimationControls } from "framer-motion";
-import { Play, X, RotateCcw, Pause } from "lucide-react";
+import {
+  Play,
+  X,
+  RotateCcw,
+  Pause,
+  ArrowLeftShort,
+  ArrowLeft,
+  ArrowRight,
+} from "lucide-react";
 function formatMMSS(totalSeconds) {
   const clamped = Math.max(0, Math.floor(totalSeconds));
   const mm = Math.floor(clamped / 60);
@@ -38,17 +46,22 @@ export default function Home() {
     setRemainingSeconds(stages[safeIndex].seconds);
   };
 
-  const skip = () => {
+  const skip = useCallback(() => {
     setStageIndex((prev) => {
       const next = (prev + 1) % stages.length;
       setRemainingSeconds(stages[next].seconds);
       return next;
     });
-  };
+  }, [stages]);
 
   const resetStage = () => {
     setRemainingSeconds(stage.seconds);
     setIsRunning(false);
+  };
+
+  const skipToLastSecond = () => {
+    setRemainingSeconds(1);
+    setIsRunning(true);
   };
 
   useEffect(() => {
@@ -62,17 +75,48 @@ export default function Home() {
     return () => window.clearInterval(id);
   }, [isRunning, remainingSeconds]);
 
-  useEffect(() => {
-    if (!isRunning) return;
-    if (remainingSeconds !== 0) return;
-    skip();
-  }, [isRunning, remainingSeconds]);
-
   const totalForStage = stage.seconds;
   const progress =
     totalForStage > 0 ? (totalForStage - remainingSeconds) / totalForStage : 0;
 
   const cardSkewControls = useAnimationControls();
+  const clickAudioRef = useRef(null);
+  const alarmAudioRef = useRef(null);
+
+  useEffect(() => {
+    clickAudioRef.current = new Audio("/click.mp3");
+    alarmAudioRef.current = new Audio("/alarm.mp3");
+  }, []);
+
+  const playClickSound = useCallback(() => {
+    const audio = clickAudioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    void audio.play().catch(() => {});
+  }, []);
+
+  const playAlarmSound = useCallback(() => {
+    const audio = alarmAudioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    void audio.play().catch(() => {});
+  }, []);
+
+  const stopAlarmSound = useCallback(() => {
+    const audio = alarmAudioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  }, []);
+
+  useEffect(() => {
+    if (!isRunning) return;
+    if (remainingSeconds !== 0) return;
+    playAlarmSound();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsRunning(false);
+    skip();
+  }, [isRunning, remainingSeconds, playAlarmSound, skip]);
 
   useEffect(() => {
     void cardSkewControls.start({ skewX: -10, transition: { duration: 0 } });
@@ -103,8 +147,12 @@ export default function Home() {
   const Button = ({ children, onClick, variant = "secondary" }) => {
     return (
       <button
-        onClick={onClick}
-        className="rounded-3xl group text-black cursor-pointer active:translate-x-0 active:overflow-hidden active:translate-y-0 flex-1 relative translate-x-[-8px] translate-y-[-8px] aspect-square bg-red-500"
+        type="button"
+        onClick={(e) => {
+          playClickSound();
+          onClick(e);
+        }}
+        className={`rounded-3xl group text-black cursor-pointer active:translate-x-0 aspect-square   active:overflow-hidden active:translate-y-0  relative translate-x-[-8px] translate-y-[-8px]  ${variant === "secondary" ? "flex-1" : "flex-1 "}`}
       >
         {Array.from({ length: 8 }, (_, i) => i + 1).map((d) => (
           <div
@@ -116,7 +164,7 @@ export default function Home() {
           />
         ))}
         <div
-          className={`w-full overflow-hidden h-full aspect-square relative z-10 flex items-center justify-center ${variant === "secondary" ? "bg-white  text-black  border border-black/10" : "bg-linear-to-r from-orange-500 to-red-600 text-white border border-white/20  "} rounded-3xl `}
+          className={`w-full overflow-hidden h-full relative z-10 flex items-center justify-center ${variant === "secondary" ? "bg-white aspect-square    text-black  border border-black/10" : "bg-linear-to-r from-red-500 w-full to-orange-600 text-white border aspect-2 border-white/20  "} rounded-3xl `}
         >
           {variant === "primary" && (
             <>
@@ -149,7 +197,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col items-center    saturate-90 justify-center  px-6 font-sans ">
+    <div className="flex h-dvh flex-col items-center  fixed left-0 top-0 w-full h-full  saturate-90 justify-center  px-6 font-sans ">
       <motion.div
         initial={{ y: 0 }}
         animate={{ y: [0, -10, 0] }}
@@ -159,14 +207,14 @@ export default function Home() {
           repeat: Infinity,
         }}
         style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
-        className="relative scale-105  -translate-x-[12px]"
+        className="relative scale-105  -translate-x-[12px] scale-120 "
       >
         <motion.div
           initial={{ skewX: -10 }}
           animate={cardSkewControls}
           className="relative"
         >
-          {/* <SideButton /> */}
+          <SideButton />
           {Array.from({ length: 16 }, (_, i) => i + 1).map((d) => (
             <div
               key={d}
@@ -204,14 +252,71 @@ export default function Home() {
               {/* <div className="bg-[linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)]  opacity-20   absolute inset-0 [background-size:7px_7px]" /> */}
               <div className="absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white blur-2xl  z-0 rounded-full"></div>
 
-              <div className="flex justify-between uppercase w-full z-10  gap-2">
+              <div className="flex justify-between font-semibold uppercase w-full z-10  gap-2">
                 <div className="flex items-center gap-1 ">
                   {stage.label === "Focus" ? (
                     <div className="w-1.5 h-1.5   bg-red-500 z-0 rounded-full"></div>
                   ) : (
                     <div className="w-1.5 h-1.5   bg-lime-500 z-0 rounded-full"></div>
                   )}
-                  <p className="text-xs font-mono tracking-tight">
+                  <p className="text-xs font-mono  tracking-tight">
+                    {" "}
+                    {stage.label}
+                  </p>
+                </div>
+                <div className="flex items-center opacity-90 font-normal gap-1 text-[8px] font-mono  tracking-tight">
+                  <ArrowRight className="w-2 h-2" />
+                  <p className="text-[8px] font-mono  tracking-tight">
+                    Short Break
+                  </p>
+                </div>
+                {/* <p className="text-xs font-mono tracking-tight">
+                  {" "}
+                  {stageIndex + 1}/{stages.length}
+                </p> */}
+              </div>
+              <p className="tracking-tight font-semibold text-shadow-lg shadow-black z-10 font-mono">
+                {" "}
+                {formatMMSS(remainingSeconds)}
+              </p>
+              <div className="flex w-full overflow-hidden min-w-0 pt-2 gap-1">
+                {stages.map((s, i) => {
+                  const completed = i < stageIndex;
+                  const active = i === stageIndex;
+                  const fillRatio = completed
+                    ? 1
+                    : active
+                      ? Math.min(1, Math.max(0, progress))
+                      : 0;
+                  const fillClass =
+                    s.label === "Focus" ? "bg-red-500" : "bg-red-500";
+                  const segmentTransition =
+                    isRunning && active
+                      ? "transition-[width] duration-1000 ease-linear"
+                      : "transition-[width] duration-200 ease-out";
+
+                  return (
+                    <div
+                      key={s.key}
+                      className="flex h-5 min-w-0 overflow-hidden rounded-md bg-white/20"
+                      style={{ flex: `${s.seconds} 1 0%` }}
+                    >
+                      <div
+                        className={`h-full rounded-md ${fillClass} ${segmentTransition}`}
+                        style={{ width: `${fillRatio * 100}%` }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              {/* <div className="flex justify-between font-semibold uppercase w-full z-10  gap-2">
+                <div className="flex items-center gap-1 ">
+                  {stage.label === "Focus" ? (
+                    <div className="w-1.5 h-1.5   bg-red-500 z-0 rounded-full"></div>
+                  ) : (
+                    <div className="w-1.5 h-1.5   bg-lime-500 z-0 rounded-full"></div>
+                  )}
+                  <p className="text-xs font-mono  tracking-tight">
                     {" "}
                     {stage.label}
                   </p>
@@ -220,13 +325,10 @@ export default function Home() {
                   {" "}
                   {stageIndex + 1}/{stages.length}
                 </p>
-              </div>
-              <p className="tracking-tight font-semibold text-shadow-lg shadow-black z-10 font-mono">
-                {" "}
-                {formatMMSS(remainingSeconds)}
-              </p>
+              </div> */}
             </div>
-            <div className="flex flex-row items-center gap-4">
+
+            <div className="flex flex-row items-center gap-3">
               <Button
                 onClick={() => {
                   pulseCardSkew();
@@ -235,10 +337,14 @@ export default function Home() {
               >
                 <X className="w-8 h-8" strokeWidth={3} />
               </Button>
+
               <Button
                 onClick={() => {
                   pulseCardSkew();
-                  setIsRunning((r) => !r);
+                  setIsRunning((r) => {
+                    if (!r) stopAlarmSound();
+                    return !r;
+                  });
                 }}
                 variant="primary"
               >
@@ -266,6 +372,20 @@ export default function Home() {
           </div>
         </motion.div>
       </motion.div>
+      {/* <button
+        type="button"
+        onClick={() => {
+          playClickSound();
+          pulseCardSkew();
+          skipToLastSecond();
+        }}
+        className="mt-6 text-xs font-mono text-zinc-500 underline-offset-4 hover:text-zinc-800 underline"
+      >
+        Skip to last second (test alarm)
+      </button> */}
+      {/* <div className="flex flex-col items-center justify-center pt-12 ">
+        <p>To Do List</p>
+      </div> */}
       {/* <button
         type="button"
         onClick={skip}
