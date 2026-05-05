@@ -38,6 +38,7 @@ export default function Home() {
   const [isRunning, setIsRunning] = useState(false);
 
   const stage = stages[stageIndex];
+  const nextStage = stages[(stageIndex + 1) % stages.length];
 
   const goToStage = (nextIndex) => {
     const safeIndex =
@@ -207,7 +208,7 @@ export default function Home() {
           repeat: Infinity,
         }}
         style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
-        className="relative scale-105  -translate-x-[12px] scale-120 "
+        className="relative scale-105  -translate-x-[12px] md:scale-120 "
       >
         <motion.div
           initial={{ skewX: -10 }}
@@ -265,9 +266,9 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex items-center opacity-90 font-normal gap-1 text-[8px] font-mono  tracking-tight">
-                  <ArrowRight className="w-2 h-2" />
-                  <p className="text-[8px] font-mono  tracking-tight">
-                    Short Break
+                  <ArrowRight className="w-2 h-2 shrink-0" />
+                  <p className="text-[8px] font-mono tracking-tight text-right">
+                    {nextStage.label}
                   </p>
                 </div>
                 {/* <p className="text-xs font-mono tracking-tight">
@@ -372,7 +373,7 @@ export default function Home() {
           </div>
         </motion.div>
       </motion.div>
-      {/* <button
+      <button
         type="button"
         onClick={() => {
           playClickSound();
@@ -382,7 +383,7 @@ export default function Home() {
         className="mt-6 text-xs font-mono text-zinc-500 underline-offset-4 hover:text-zinc-800 underline"
       >
         Skip to last second (test alarm)
-      </button> */}
+      </button>
       {/* <div className="flex flex-col items-center justify-center pt-12 ">
         <p>To Do List</p>
       </div> */}
